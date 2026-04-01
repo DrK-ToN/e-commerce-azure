@@ -8,10 +8,6 @@ const { tableOrdersClient } = require("../config/azureProvider");
 const upload = multer(); // Middleware para processar Multipart Form-Data (Arquivos + Texto)
 const cors = require('cors');
 
-app.use(cors({
-  origin: ['https://e-commerce-azure-production.up.railway.app', 'http://localhost:3000'], // Adicione sua URL da Vercel aqui
-  credentials: true
-}));
 
 // --- ROTA DE TESTE ---
 router.get('/teste', (req, res) => {
