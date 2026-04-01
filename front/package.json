@@ -1,6 +1,6 @@
 {
   "engines": {
-    "node": ">=20.0.0"
+    "node": "20.x"
   },
   "name": "front",
   "version": "0.1.0",
