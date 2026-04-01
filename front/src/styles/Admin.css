@@ -1,5 +1,4 @@
-/* Admin.css */
-
+/* --- LAYOUT E ESTRUTURA --- */
 .admin-header {
   display: flex;
   justify-content: space-between;
@@ -11,102 +10,169 @@
   font-size: 2.5rem;
 }
 
-.stats-grid {
+.management-grid, .grid-clients {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 25px;
+  margin-top: 40px;
 }
 
-.stat-card {
-  padding: 20px;
+/* --- CARDS E ESTÁTICAS --- */
+.stat-card, .management-card, .client-card, .order-item {
+  padding: 25px;
+  background: rgba(255, 255, 255, 0.03); /* Mantendo o padrão do seu container */
+  border-radius: 8px;
 }
 
-.stat-label {
+.stat-label, .management-card p, .text-muted {
   color: var(--text-muted);
+  margin: 10px 0;
 }
 
 .stat-value {
   font-size: 2rem;
 }
 
-.stat-value.accent {
+.stat-value.accent, .accent-blue {
   color: var(--accent-blue);
 }
 
-.management-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 25px;
-  margin-top: 40px;
+/* --- TABELAS PADRONIZADAS (Produtos e Pedidos Recentes) --- */
+.admin-table-container, .recent-orders-section {
+  padding: 20px;
+  overflow-x: auto;
 }
 
-.management-card {
-  padding: 30px;
-}
-
-.management-card p {
-  color: var(--text-muted);
-  margin: 15px 0;
-}
-
-.management-card button {
+.admin-table, .orders-table {
   width: 100%;
+  border-collapse: collapse;
+  color: var(--text-muted);
 }
 
-/* Cores específicas dos cards de gerenciamento */
+.admin-table th, .orders-table th {
+  background: rgba(0, 0, 0, 0.3);
+  color: var(--accent-blue);
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  padding: 12px;
+  text-align: left;
+  border-bottom: 2px solid #333;
+}
+
+.admin-table td, .orders-table td, .row-border {
+  padding: 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.admin-table tr:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* --- COMPONENTES ESPECÍFICOS --- */
+/* Clientes */
+.client-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.client-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 2px solid var(--accent-blue);
+  object-fit: cover;
+}
+
+/* Pedidos */
+.order-item {
+  border-left: 4px solid var(--accent-blue);
+  margin-bottom: 15px;
+}
+
+.order-main-info {
+  display: flex;
+  justify-content: space-between;
+}
+
+.order-number {
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: white;
+}
+
+/* --- BOTÕES E STATUS --- */
+.small-btn {
+  padding: 5px 10px;
+  font-size: 0.75rem;
+  margin-right: 5px;
+}
+
+.btn-danger {
+  background: #a52e0d;
+  color: white;
+  border: none;
+}
+
+.back-button-wrapper {
+  position: sticky;
+  top: 64px; /* Ajuste conforme a altura da sua Navbar */
+  z-index: 999;
+  
+  width: 100%;
+  padding: 15px 5%; /* Espaçamento interno */
+  
+  /* REMOVIDO: background e backdrop-filter */
+  background: transparent; 
+  backdrop-filter: none; 
+  
+  /* OPCIONAL: Uma borda muito sutil apenas para delimitar o início do conteúdo */
+  border-bottom: none; 
+  
+  display: flex;
+  align-items: center;
+  pointer-events: none; /* Permite clicar no que está atrás do "vazio" do wrapper */
+}
+
+.btn-back-cyber {
+  /* Reativar eventos de clique apenas para o botão */
+  pointer-events: auto; 
+  
+  background: rgba(0, 0, 0, 0.8); /* Fundo sólido no botão para não sumir no texto atrás */
+  color: #40A2D8;
+  border: 1px solid #40A2D8;
+  padding: 8px 20px;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.75rem;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  clip-path: polygon(0 0, 100% 0, 100% 70%, 95% 100%, 0 100%);
+  transition: all 0.3s ease;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.btn-back-cyber:hover {
+  background: #40A2D8;
+  color: #000;
+  box-shadow: 0 0 20px rgba(64, 162, 216, 0.6);
+}
+
+.status-dot { color: #2ecc71; }
+.status-pending { color: #ffd700; }
+.status-shipped { color: #2ecc71; }
+.status-cancelled { color: #ff4d4d; }
+
+/* --- CORES DE DESTAQUE --- */
 .card-red { border-top: 4px solid #a52e0d; }
 .card-green { border-top: 4px solid #2ecc71; }
 .card-purple { border-top: 4px solid #9b59b6; }
 
-.btn-outline-green {
-  border-color: #2ecc71 !important;
-  color: #2ecc71 !important;
-}
+.btn-outline-green { border: 1px solid #2ecc71 !important; color: #2ecc71 !important; background: transparent; }
+.btn-outline-purple { border: 1px solid #9b59b6 !important; color: #9b59b6 !important; background: transparent; }
+.btn-outline-red { border: 1px solid #a52e0d !important; color: #a52e0d !important; background: transparent; }
 
-.btn-outline-purple  {
-  border-color: #9b59b6 !important;
-  color: #9b59b6 !important;
-}
-.btn-outline-red  {
-  border-color: #a52e0d !important;
-  color: #a52e0d !important;
-}
-
-.recent-orders-section {
-  margin-top: 50px;
-  padding: 25px;
-}
-
-.recent-orders-section h3 {
-  margin-bottom: 20px;
-}
-
-.orders-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.table-header {
-  border-bottom: 2px solid #333;
-  color: var(--accent-blue);
-}
-
-.table-header th {
-  padding: 12px;
-}
-
-.row-border {
-  border-bottom: 1px solid #222;
-}
-
-.cell-padding {
-  padding: 15px;
-}
-
-.text-center {
-  text-align: center;
-}
-
-.status-dot {
-  color: #2ecc71;
-}
+.text-center { text-align: center; }
+.text-white { color: white; }

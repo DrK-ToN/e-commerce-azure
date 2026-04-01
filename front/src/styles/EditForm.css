@@ -1,0 +1,65 @@
+/* src/styles/EditForm.css */
+.edit-container {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.edit-form {
+    padding: 30px;
+    border-radius: 8px;
+    display: grid;
+    gap: 20px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.input-group label {
+    color: var(--accent-blue);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.grid-3-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+}
+
+.image-preview-container {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.preview-img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid var(--accent-blue);
+}
+
+.form-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.btn-cancel {
+    flex: 1;
+    color: #ff4d4d !important;
+    border-color: #ff4d4d !important;
+}
+
+.btn-save {
+    flex: 2;
+}

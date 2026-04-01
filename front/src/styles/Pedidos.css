@@ -1,0 +1,86 @@
+.pedidos-list {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  margin-top: 20px;
+}
+
+.pedido-card {
+  background: #0d1217;
+  border: 1px solid rgba(64, 162, 216, 0.15);
+  border-left: 4px solid #40A2D8; /* Detalhe lateral azul */
+  padding: 20px;
+  border-radius: 4px;
+}
+
+.pedido-main-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.85rem;
+}
+
+.pedido-status {
+  padding: 4px 12px;
+  border-radius: 2px;
+  font-size: 0.75rem;
+  font-weight: 900;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Cores baseadas no seu ENUM */
+.status-pendente { color: #ffa500; border: 1px solid #ffa500; }
+.status-pago { color: #00ff00; border: 1px solid #00ff00; }
+.status-enviado { color: #40A2D8; border: 1px solid #40A2D8; }
+.status-entregue { color: #fff; background: #40A2D8; color: #000; }
+
+.pedido-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.pedido-pagamento {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  color: var(--text-muted);
+}
+
+.pedido-pagamento strong {
+  color: #fff;
+  text-transform: uppercase;
+}
+
+.pedido-total-box {
+  text-align: right;
+}
+
+.pedido-total-box small {
+  display: block;
+  color: var(--accent-blue);
+  font-size: 0.7rem;
+  letter-spacing: 1px;
+}
+
+.total-valor {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #fcee0a; /* Amarelo Cyberpunk */
+}
+
+.pedido-footer {
+  margin-top: 15px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+.info-chip {
+  font-size: 0.65rem;
+  color: rgba(255,255,255,0.3);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}

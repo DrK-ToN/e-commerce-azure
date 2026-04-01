@@ -1,0 +1,8 @@
+.admin-container { padding: 20px; color: white; }
+.form-box { margin-bottom: 20px; display: flex; gap: 10px; }
+.form-box input { padding: 8px; border-radius: 4px; border: 1px solid #444; background: #222; color: white; }
+.admin-table { width: 100%; border-collapse: collapse; background: #1a1a1a; }
+.admin-table th, .admin-table td { border: 1px solid #333; padding: 12px; text-align: left; }
+.admin-table th { background: #333; }
+.btn-delete { background: #ff4444; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px; }
+.btn-delete:hover { background: #cc0000; }

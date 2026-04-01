@@ -1,29 +1,34 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../services/api';
-import '../styles/Admin.css'; // Importando o arquivo de estilos
+import { trpc } from '../utils/trpc';
+import '../styles/Admin.css';
 
 const Admin = () => {
   const navigate = useNavigate();
-  const [stats, setStats] = useState({
+
+  // Chamada do tRPC (Substitui o useEffect e o Axios)
+  const { data: statsData, isLoading, error } = trpc['admin.stats'].useQuery();
+
+  // Valores padrão enquanto carrega ou se der erro
+  const stats = statsData || {
     totalProdutos: 0,
     totalClientes: 0,
     totalPedidos: 0,
     faturamentoTotal: 0,
     pedidosRecentes: []
-  });
+  };
 
-  useEffect(() => {
-    api.get('/admin/stats')
-      .then(res => setStats(res.data))
-      .catch(err => console.error("Falha ao carregar dashboard:", err));
-  }, []);
+  if (isLoading) return <div className="container"><h2 className="admin-title">Carregando Dashboard...</h2></div>;
+  
+  if (error) {
+    console.error("Erro no tRPC:", error);
+    return <div className="container"><h2 className="admin-title">Erro ao conectar com o Azure. Verifique o console.</h2></div>;
+  }
 
   return (
     <div className="container">
       <header className="admin-header">
         <h1 className="footer-title admin-title">Painel Administrativo</h1>
-        <button className="btn-secondary" onClick={() => navigate('/')}>← Voltar</button>
       </header>
 
       {/* Dashboard Cards */}
@@ -53,7 +58,7 @@ const Admin = () => {
           <p>Gerencie o catálogo, controle o estoque e preços.</p>
           <button
             className="btn-secondary btn-outline-red"
-            Click={() => navigate('/admin/produtos')}>Gerenciar Produtos</button>
+            onClick={() => navigate('/admin/produtos')}>Gerenciar Produtos</button>
         </div>
 
         <div className="section-highlight management-card card-green">
@@ -69,12 +74,12 @@ const Admin = () => {
 
         <div className="section-highlight management-card card-purple">
           <h3>🛒 Pedidos</h3>
-          <p>Acompanhe as vendas registradas no Azure Table Storage.</p>
+          <p>Acompanhe as vendas registradas no Azure.</p>
           <button 
             className="btn-secondary btn-outline-purple" 
             onClick={() => navigate('/admin/pedidos')}
           >
-            Gerenciar Pedidos ({stats.totalPedidos})
+            Gerenciar Pedidos
           </button>
         </div>
       </div>
@@ -92,13 +97,13 @@ const Admin = () => {
             </tr>
           </thead>
           <tbody>
-            {stats.pedidosRecentes.map(pedido => (
-              <tr key={pedido.rowKey} className="row-border">
-                <td className="cell-padding">#{pedido.rowKey}</td>
-                <td className="text-center">ID: {pedido.clienteId}</td>
-                <td className="text-center">R$ {pedido.valorTotal}</td>
+            {stats.pedidosRecentes?.map(pedido => (
+              <tr key={pedido.id || pedido.rowKey} className="row-border">
+                <td className="cell-padding">#{pedido.id || pedido.rowKey}</td>
+                <td className="text-center">{pedido.clienteNome || 'ID: ' + pedido.clienteId}</td>
+                <td className="text-center">R$ {pedido.valorTotal || pedido.totalPrice}</td>
                 <td className="text-center">
-                  <span className="status-dot">● {pedido.metodo}</span>
+                  <span className="status-dot">● {pedido.status || 'Concluído'}</span>
                 </td>
               </tr>
             ))}

@@ -128,6 +128,71 @@ button:hover {
   background-color: rgba(255, 77, 77, 0.1);
 }
 
+.back-button-wrapper {
+  position: sticky;
+  top: 64px; /* Ajuste conforme a altura da sua Navbar */
+  z-index: 999;
+  
+  width: 100%;
+  padding: 15px 5%; /* Espaçamento interno */
+  
+  /* REMOVIDO: background e backdrop-filter */
+  background: transparent; 
+  backdrop-filter: none; 
+  
+  /* OPCIONAL: Uma borda muito sutil apenas para delimitar o início do conteúdo */
+  border-bottom: none; 
+  
+  display: flex;
+  align-items: center;
+  pointer-events: none; /* Permite clicar no que está atrás do "vazio" do wrapper */
+}
+
+.btn-back-cyber {
+  /* Reativar eventos de clique apenas para o botão */
+  pointer-events: auto; 
+  
+  background: rgba(0, 0, 0, 0.8); /* Fundo sólido no botão para não sumir no texto atrás */
+  color: #40A2D8;
+  border: 1px solid #40A2D8;
+  padding: 8px 20px;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.75rem;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  clip-path: polygon(0 0, 100% 0, 100% 70%, 95% 100%, 0 100%);
+  transition: all 0.3s ease;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.btn-back-cyber:hover {
+  background: #40A2D8;
+  color: #000;
+  box-shadow: 0 0 20px rgba(64, 162, 216, 0.6);
+}
+
+.nav-cart {
+  position: relative;
+  display: flex;
+  align-items: center;
+  color: var(--accent-blue);
+  text-decoration: none;
+}
+
+.cart-badge {
+  position: absolute;
+  top: -10px;
+  right: -12px;
+  background: #ff4d4d;
+  color: white;
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 50%;
+  font-weight: bold;
+  box-shadow: 0 0 10px rgba(255, 77, 77, 0.5);
+}
+
 /* Formulários (Igual à seção de Busca da imagem) */
 .form-group {
   margin-bottom: 15px;

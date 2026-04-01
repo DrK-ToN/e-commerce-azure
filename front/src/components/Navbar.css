@@ -49,6 +49,38 @@
   color: var(--accent-blue);
 }
 
+.nav-cart {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  color: var(--accent-blue, #40A2D8);
+  transition: transform 0.2s;
+}
+
+.nav-cart:hover {
+  transform: scale(1.1);
+}
+
+.cart-badge {
+  position: absolute;
+  top: -5px;
+  right: -8px;
+  background-color: #ff4d4d; /* Vermelho Alerta */
+  color: white;
+  font-size: 0.7rem;
+  font-weight: bold;
+  border-radius: 50%;
+  padding: 2px 6px;
+  min-width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 10px rgba(255, 77, 77, 0.5);
+  border: 1px solid var(--bg-dark, #000);
+}
+
 /* Botão de Login/Perfil em destaque */
 .login-btn {
   border: 1px solid var(--accent-blue);
