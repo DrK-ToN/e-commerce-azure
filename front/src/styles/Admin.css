@@ -1,0 +1,112 @@
+/* Admin.css */
+
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.admin-title {
+  font-size: 2.5rem;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.stat-card {
+  padding: 20px;
+}
+
+.stat-label {
+  color: var(--text-muted);
+}
+
+.stat-value {
+  font-size: 2rem;
+}
+
+.stat-value.accent {
+  color: var(--accent-blue);
+}
+
+.management-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 25px;
+  margin-top: 40px;
+}
+
+.management-card {
+  padding: 30px;
+}
+
+.management-card p {
+  color: var(--text-muted);
+  margin: 15px 0;
+}
+
+.management-card button {
+  width: 100%;
+}
+
+/* Cores específicas dos cards de gerenciamento */
+.card-red { border-top: 4px solid #a52e0d; }
+.card-green { border-top: 4px solid #2ecc71; }
+.card-purple { border-top: 4px solid #9b59b6; }
+
+.btn-outline-green {
+  border-color: #2ecc71 !important;
+  color: #2ecc71 !important;
+}
+
+.btn-outline-purple  {
+  border-color: #9b59b6 !important;
+  color: #9b59b6 !important;
+}
+.btn-outline-red  {
+  border-color: #a52e0d !important;
+  color: #a52e0d !important;
+}
+
+.recent-orders-section {
+  margin-top: 50px;
+  padding: 25px;
+}
+
+.recent-orders-section h3 {
+  margin-bottom: 20px;
+}
+
+.orders-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table-header {
+  border-bottom: 2px solid #333;
+  color: var(--accent-blue);
+}
+
+.table-header th {
+  padding: 12px;
+}
+
+.row-border {
+  border-bottom: 1px solid #222;
+}
+
+.cell-padding {
+  padding: 15px;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.status-dot {
+  color: #2ecc71;
+}

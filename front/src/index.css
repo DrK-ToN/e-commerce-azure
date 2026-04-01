@@ -1,0 +1,187 @@
+/* Variáveis de Cores baseadas no design Casa dos Cromos */
+:root {
+  --bg-dark: #0f171e;         /* Fundo quase preto */
+  --bg-section: #243b4a;      /* Azul petróleo das seções */
+  --accent-blue: #40a2d8;     /* Azul brilhante dos botões e ícones */
+  --text-main: #ffffff;       /* Texto branco */
+  --text-muted: #a0aec0;      /* Texto cinza das descrições */
+  --input-bg: rgba(255, 255, 255, 0.05);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  line-height: 1.6;
+}
+
+/* Container Geral */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+/* Navbar Estilo Cyber */
+.navbar {
+  background-color: var(--bg-dark);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 5%;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.nav-logo {
+  font-weight: bold;
+  font-size: 1.5rem;
+  color: var(--accent-blue);
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nav-links {
+  display: flex;
+  list-style: none;
+  gap: 25px;
+}
+
+.nav-links a {
+  color: var(--text-main);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.3s;
+}
+
+.nav-links a:hover {
+  color: var(--accent-blue);
+}
+
+img {
+  max-width: 100%;
+}
+
+/* Botões Estilizados */
+button, .btn-primary {
+  background-color: var(--accent-blue);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform 0.2s, background 0.3s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Padronização para botões de ação na tabela */
+.btn-secondary {
+  background-color: #1a262f;
+  color: var(--text-main);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 8px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-decoration: none; /* Remove o sublinhado do Link */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  min-width: 80px; /* Garante que os dois fiquem do mesmo tamanho */
+}
+
+button:hover {
+  background-color: #358bbd;
+  transform: translateY(-2px);
+}
+
+.btn-secondary:hover {
+  background-color: var(--bg-section);
+  border-color: var(--accent-blue);
+  transform: translateY(-2px);
+}
+
+.btn-secondary {
+  background-color: #1a262f;
+  border: 1px solid #333;
+}
+
+/* Variante específica para o texto de excluir dentro da classe */
+.btn-danger {
+  color: #ff4d4d !important;
+}
+
+.btn-danger:hover {
+  border-color: #ff4d4d;
+  background-color: rgba(255, 77, 77, 0.1);
+}
+
+/* Formulários (Igual à seção de Busca da imagem) */
+.form-group {
+  margin-bottom: 15px;
+}
+
+input, textarea {
+  width: 100%;
+  padding: 12px;
+  background-color: var(--input-bg);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  color: white;
+  margin-top: 5px;
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+}
+
+/* Seções de destaque (Azul Petróleo) */
+.section-highlight {
+  background-color: var(--bg-section);
+  padding: 60px 0;
+  margin: 40px 0;
+}
+
+/* Footer (Baseado na imagem 1) */
+.footer {
+  background-color: var(--bg-dark);
+  padding: 60px 5% 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: 50px;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 40px;
+}
+
+.footer-title {
+  color: var(--accent-blue);
+  font-weight: bold;
+  margin-bottom: 15px;
+  text-transform: uppercase;
+}
+
+.footer-links {
+  list-style: none;
+}
+
+.footer-links li {
+  margin-bottom: 8px;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}

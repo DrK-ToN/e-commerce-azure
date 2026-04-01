@@ -1,0 +1,121 @@
+/* Produtos.css */
+
+.produtos-container {
+  padding-bottom: 50px;
+}
+
+.produtos-header {
+  margin-bottom: 40px;
+  border-left: 4px solid var(--accent-blue);
+  padding-left: 20px;
+}
+
+.produtos-header h1 {
+  font-size: 2.5rem;
+  margin: 0;
+}
+
+.produtos-header p {
+  color: var(--text-muted);
+}
+
+/* Grid de Layout */
+.produtos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 40px;
+}
+
+/* O Card com a Moldura Especial */
+.cyber-product-card {
+  position: relative;
+  background-color: #0d1217;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease;
+  
+  /* Configuração da Moldura (imagem enviada) */
+  border: 55px solid transparent;
+  border-image-source: url('../assets/framecp2077.webp'); /* Ajuste o caminho aqui */
+  border-image-slice: 200 150 200 150;
+  border-image-width: 55px;
+  border-image-repeat: round;
+}
+
+.cyber-product-card:hover {
+  transform: translateY(-5px);
+  filter: brightness(1.1);
+}
+
+/* Badge "NOVO" */
+.status-badge {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: var(--accent-blue);
+  color: #000;
+  padding: 5px 12px;
+  font-size: 0.75rem;
+  font-weight: 900;
+  border-radius: 2px;
+  z-index: 10;
+  clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%);
+}
+
+/* Imagem do Produto */
+.product-thumb-container {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.product-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Corpo do Card */
+.product-body {
+  padding: 15px 5px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-body h3 {
+  margin-bottom: 10px;
+  color: var(--text-main);
+  font-size: 1.2rem;
+  text-transform: uppercase;
+}
+
+.product-description {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  margin-bottom: 15px;
+  flex: 1;
+}
+
+/* Rodapé do Card (Preço e Botão) */
+.product-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.product-price {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #fcee0a; /* Amarelo Cyber */
+}
+
+/* Mensagens de Estado */
+.loading-box, .empty-box {
+  text-align: center;
+  padding: 100px 0;
+  color: var(--text-muted);
+}

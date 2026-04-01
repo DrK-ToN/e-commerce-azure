@@ -1,0 +1,76 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 5%;
+  background-color: var(--bg-dark);
+  border-bottom: 1px solid rgba(64, 162, 216, 0.2); /* Brilho sutil azul */
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  backdrop-filter: blur(10px); /* Efeito de vidro se o fundo for semi-transparente */
+}
+
+.nav-logo a {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--accent-blue);
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Efeito de brilho no Logo ao passar o mouse */
+.nav-logo a:hover {
+  text-shadow: 0 0 10px var(--accent-blue);
+}
+
+.nav-links {
+  display: flex;
+  list-style: none;
+  align-items: center;
+  gap: 2rem;
+}
+
+.nav-links li a {
+  color: var(--text-main);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+}
+
+/* Hover nos links */
+.nav-links li a:hover {
+  color: var(--accent-blue);
+}
+
+/* Botão de Login/Perfil em destaque */
+.login-btn {
+  border: 1px solid var(--accent-blue);
+  padding: 8px 20px;
+  border-radius: 4px;
+  background: transparent;
+  transition: all 0.3s ease !important;
+}
+
+.login-btn:hover {
+  background: var(--accent-blue) !important;
+  color: white !important;
+  box-shadow: 0 0 15px var(--accent-blue);
+}
+
+/* Responsividade básica para mobile */
+@media (max-width: 768px) {
+  .nav-links {
+    gap: 1rem;
+  }
+  
+  .nav-links li a {
+    font-size: 0.8rem;
+  }
+}
