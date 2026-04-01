@@ -17,8 +17,7 @@ const Navbar = () => {
         <Link to="/">⚙️ CASA DOS CROMOS</Link>
       </div>
       <ul className="nav-links">
-        <li><Link to="/">Home</Link></li>
-        <li><Link to="/produtos">Produtos</Link></li>
+        <li><Link to="/produtos">📦 Produtos</Link></li>
         
         {/* LINHA ADICIONADA: Pedidos */}
         <li>
@@ -27,8 +26,8 @@ const Navbar = () => {
           </Link>
         </li>
 
-        <li><Link to="/admin">Admin</Link></li>
-        <li><Link to="/perfil" className="login-btn">Perfil</Link></li>
+        <li><Link to="/admin">🔑 Admin</Link></li>
+        
         
         <li>
           <Link to="/carrinho" className="nav-cart">
@@ -37,7 +36,9 @@ const Navbar = () => {
               <span className="cart-badge">{displayCount}</span>
             )}
           </Link>
+          
         </li>
+        <li><Link to="/perfil" className="login-btn">👤 Perfil</Link></li>
       </ul>
     </nav>
   );
