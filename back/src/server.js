@@ -9,13 +9,9 @@ require('dotenv').config();
 
 const app = express();
 
-// --- CONFIGURAÇÃO DE CORS (UNIFICADA) ---
+// --- CORS UNIFICADO (Sem barras no final e sem duplicatas) ---
 app.use(cors({
-  origin: [
-    'https://e-commerce-azure-68bc9x78o-everton-freitas-projects-2b6b7501.vercel.app',
-    'https://e-commerce-azure-jet-rho.vercel.app', // Removi a barra no final (importante!)
-    'http://localhost:3000'
-  ],
+  origin: '*', // Durante a P1, use '*' para garantir que nada bloqueie
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
 }));
@@ -33,7 +29,6 @@ const appRouter = t.router({
       const [prodRes] = await pool.query('SELECT COUNT(*) as total_p FROM produtos');
       const [cliRes] = await pool.query('SELECT COUNT(*) as total_c FROM clientes');
       const [ordRes] = await pool.query('SELECT COALESCE(SUM(`total`), 0) as faturamento, COUNT(*) as qtd FROM pedidos');
-
       return {
         totalProdutos: prodRes[0].total_p || 0,
         totalClientes: cliRes[0].total_c || 0,
@@ -42,16 +37,11 @@ const appRouter = t.router({
         pedidosRecentes: [] 
       };
     } catch (error) {
-      console.error("Erro SQL Stats:", error.message);
       return { totalProdutos: 0, totalClientes: 0, totalPedidos: 0, faturamentoTotal: 0, pedidosRecentes: [] };
     }
   }),
-
-  'produtos.list': t.procedure.query(async () => {
-    const [rows] = await pool.query('SELECT * FROM produtos ORDER BY id DESC');
-    return rows;
-  }),
-
+  
+  // Rota de listagem de pedidos para o Admin (tRPC)
   'pedidos.list': t.procedure.query(async () => {
     const [rows] = await pool.query(`
       SELECT p.*, c.nome as cliente_nome 
@@ -59,27 +49,34 @@ const appRouter = t.router({
       LEFT JOIN clientes c ON p.cliente_id = c.id 
       ORDER BY p.data_pedido DESC
     `);
-    return rows;
+    return rows || [];
   }),
-
-  // Adicione aqui as outras rotas mutation (update, delete) que você já tem...
 });
 
-// --- ROTAS REST ---
+// --- ROTAS REST (Para Pedidos.js e Produtos.js) ---
 
-// Rota simplificada para o catálogo
-app.get('/api/produtos', async (req, res) => {
+// Rota para o histórico de pedidos do CLIENTE
+app.get('/api/pedidos/cliente/:id', async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT * FROM produtos');
-    res.json(rows);
+    const [rows] = await pool.execute(
+      'SELECT * FROM pedidos WHERE cliente_id = ? ORDER BY data_pedido DESC',
+      [req.params.id]
+    );
+    res.json(rows || []); // Garante que retorne um Array e não quebre o .map()
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("Erro Pedidos:", error.message);
+    res.status(500).json([]); 
   }
 });
 
-// Importando as rotas do arquivo separado (routes/index.js)
-const routes = require('./routes/index'); 
-app.use('/api', routes);
+app.get('/api/produtos', async (req, res) => {
+  try {
+    const [rows] = await pool.query('SELECT * FROM produtos');
+    res.json(rows || []);
+  } catch (error) {
+    res.status(500).json([]);
+  }
+});
 
 // --- MIDDLEWARE tRPC ---
 app.use(
@@ -90,7 +87,8 @@ app.use(
   })
 );
 
+// Porta dinâmica para o Railway
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 Backend rodando na porta ${PORT}`);
 });

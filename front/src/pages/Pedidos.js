@@ -8,19 +8,27 @@ const Pedidos = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Busca os pedidos do cliente (ID 1 simulado por enquanto)
-    api.get('/pedidos/cliente/1') 
+    // Busca os pedidos do cliente (ID 1 simulado)
+    api.get('/pedidos/cliente/1')
       .then((res) => {
-        setPedidos(res.data);
+        // Garante que o que vai para o estado é um array
+        setPedidos(Array.isArray(res.data) ? res.data : []);
         setLoading(false);
       })
       .catch((err) => {
         console.error("Erro ao carregar registros:", err);
+        setPedidos([]); // Evita que pedidos fique como undefined
         setLoading(false);
       });
   }, []);
 
-  if (loading) return <div className="container loading-box"><h3>[ ACESSANDO TERMINAL DE VENDAS... ]</h3></div>;
+  if (loading) {
+    return (
+      <div className="container loading-box">
+        <h3>[ ACESSANDO TERMINAL DE VENDAS... ]</h3>
+      </div>
+    );
+  }
 
   return (
     <div className="container pedidos-container">
@@ -29,13 +37,9 @@ const Pedidos = () => {
         <p>Logs de transações autorizadas para este usuário.</p>
       </header>
 
-      {pedidos.length === 0 ? (
-        <div className="empty-box">
-          <p>Nenhum registro de compra encontrado no banco de dados.</p>
-        </div>
-      ) : (
-        <div className="pedidos-list">
-          {pedidos.map((pedido) => (
+      <div className="pedidos-list">
+        {Array.isArray(pedidos) && pedidos.length > 0 ? (
+          pedidos.map((pedido) => (
             <div key={pedido.id} className="pedido-card">
               <div className="pedido-main-info">
                 <div className="pedido-id">
@@ -51,25 +55,32 @@ const Pedidos = () => {
 
               <div className="pedido-content">
                 <div className="pedido-pagamento">
-                  <FaCreditCard /> 
-                  <small>MÉTODO:</small> 
-                  <strong>{pedido.metodo_pagamento}</strong>
+                  <FaCreditCard />
+                  <small>MÉTODO:</small>
+                  <strong>{pedido.metodo_pagamento || 'N/A'}</strong>
                 </div>
-                
+
                 <div className="pedido-total-box">
                   <small>TOTAL DA CARGA:</small>
-                  <span className="total-valor">C$ {parseFloat(pedido.total).toFixed(2)}</span>
+                  <span className="total-valor">
+                    C$ {parseFloat(pedido.total || 0).toFixed(2)}
+                  </span>
                 </div>
               </div>
-              
-              {/* Rodapé do card para indicar detalhes */}
+
               <div className="pedido-footer">
-                <span className="info-chip"><FaMicrochip /> Hardware Verificado</span>
+                <span className="info-chip">
+                  <FaMicrochip /> Hardware Verificado
+                </span>
               </div>
             </div>
-          ))}
-        </div>
-      )}
+          ))
+        ) : (
+          <div className="empty-box">
+            <p>Nenhum registro de compra encontrado no sistema.</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
