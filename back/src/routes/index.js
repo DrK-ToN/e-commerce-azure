@@ -6,8 +6,6 @@ const { uploadImageToBlob } = require('../services/blobService');
 const { tableOrdersClient } = require("../config/azureProvider");
 
 const upload = multer(); // Middleware para processar Multipart Form-Data (Arquivos + Texto)
-const cors = require('cors');
-
 
 // --- ROTA DE TESTE ---
 router.get('/teste', (req, res) => {
@@ -161,15 +159,17 @@ router.put('/produtos/:id', upload.single('imagem'), async (req, res) => {
 //        SEÇÃO: PEDIDOS (Checkout + Table Storage)
 // ==========================================
 
-router.get('/pedidos/cliente/:id', async (req, res) => {
+rrouter.get('/pedidos/cliente/:id', async (req, res) => {
     try {
         const [rows] = await pool.execute(
             'SELECT * FROM pedidos WHERE cliente_id = ? ORDER BY data_pedido DESC',
             [req.params.id]
         );
-        res.json(rows);
+        // Garante que sempre envie um array, mesmo vazio
+        res.json(rows || []); 
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.error(error);
+        res.status(500).json([]); // Envia array vazio em caso de erro para não quebrar o front
     }
 });
 
