@@ -6,7 +6,9 @@ const routes = require('./routes/index');
 
 const app = express();
 
-app.use(cors({ origin: '*' }));
+app.use(cors({ origin: '*', // Permite qualquer site (ideal para o projeto da Fatec)
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Libera explicitamente o PUT
+  allowedHeaders: ['Content-Type', 'Authorization'] }));
 app.use(express.json());
 
 // Liga as rotas ao prefixo /api
