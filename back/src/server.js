@@ -11,11 +11,18 @@ const app = express();
 
 // --- CORS UNIFICADO (Sem barras no final e sem duplicatas) ---
 app.use(cors({
-  origin: 'https://e-commerce-azure-git-main-everton-freitas-projects-2b6b7501.vercel.app', // Permite que qualquer URL da Vercel acesse a API na P1
+  origin: ['https://e-commerce-azure-git-main-everton-freitas-projects-2b6b7501.vercel.app',
+  'https://e-commerce-azure-cfrqci3zi-everton-freitas-projects-2b6b7501.vercel.app',
+  'https://e-commerce-azure-jet-rho.vercel.app', // Permite que qualquer URL da Vercel acesse a API na P1
+  'http://localhost:3001',
+  ],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
 }));
+
+// Responde o preflight para todas as rotas
+app.options('*', cors());  // 👈 adicione essa linha logo abaixo
 
 app.use(express.json());
 
