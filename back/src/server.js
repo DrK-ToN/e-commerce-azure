@@ -11,8 +11,9 @@ const app = express();
 
 // --- CORS UNIFICADO (Sem barras no final e sem duplicatas) ---
 app.use(cors({
-  origin: '*', // Durante a P1, use '*' para garantir que nada bloqueie
+  origin: 'https://e-commerce-azure-git-main-everton-freitas-projects-2b6b7501.vercel.app', // Permite que qualquer URL da Vercel acesse a API na P1
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
 }));
 
