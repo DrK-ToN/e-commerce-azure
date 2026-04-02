@@ -1,123 +1,156 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import api from '../services/api';
+import { AuthContext } from '../context/AuthContext';
+import '../styles/Perfil.css';
 
-const Perfil = () => {
-  const clienteId = 1; // Simulação de usuário logado
-  const [nome, setNome] = useState('');
-  const [email, setEmail] = useState('');
-  const [telefone, setTelefone] = useState('');
-  const [endereco, setEndereco] = useState('');
-  const [fotoUrl, setFotoUrl] = useState(''); // Estado para a URL da foto atual
-  const [novaFoto, setNovaFoto] = useState(null);
-
-  // 1. Carrega os dados atuais do banco ao montar o componente
-  useEffect(() => {
-    api.get(`/clientes/${clienteId}`)
-      .then(res => {
-        if (res.data) {
-          setNome(res.data.nome || '');
-          setEmail(res.data.email || '');
-          setTelefone(res.data.telefone || '');
-          setEndereco(res.data.endereco || '');
-          setFotoUrl(res.data.foto_url || ''); // Note o padrão snake_case do seu banco
-        }
-      })
-      .catch(err => console.error("Erro ao carregar perfil:", err));
-  }, [clienteId]);
-
-  // 2. Função unificada para atualizar os dados
-  const handleAtualizar = async (e) => {
-    e.preventDefault();
+function Perfil() {
+    const { user } = useContext(AuthContext);
+    const fileInputRef = useRef(null);
     
-    const formData = new FormData();
-    formData.append('nome', nome);
-    formData.append('email', email);
-    formData.append('telefone', telefone);
-    formData.append('endereco', endereco);
+    // 1. Iniciamos sempre com strings vazias para evitar o erro de "controlled/uncontrolled"
+    const [perfil, setPerfil] = useState({ 
+        nome: '', email: '', telefone: '', endereco: '', foto_url: '',
+        cep: '', bairro: '', cidade: '', uf: ''
+    });
+    const [mensagem, setMensagem] = useState({ texto: '', tipo: '' });
+    const [uploading, setUploading] = useState(false);
 
-    // Lógica da Foto:
-    if (novaFoto) {
-      // Se selecionou um arquivo novo, envia como 'foto' (para o multer no backend)
-      formData.append('foto', novaFoto);
-    } else {
-      // Se não mudou a foto, envia a URL atual como string para não perder o dado
-      formData.append('foto_url', fotoUrl); 
-    }
+    useEffect(() => {
+        if (user && user.id) {
+            api.get(`/clientes/${user.id}`)
+                .then(response => {
+                    const d = response.data;
+                    // 2. Fallback para cada campo vindo do banco (evita null nos inputs)
+                    setPerfil({
+                        nome: d.nome || '',
+                        email: d.email || '',
+                        telefone: d.telefone || '',
+                        endereco: d.endereco || '',
+                        foto_url: d.foto_url || '',
+                        cep: d.cep || '',
+                        bairro: d.bairro || '',
+                        cidade: d.cidade || '',
+                        uf: d.uf || ''
+                    });
+                })
+                .catch(error => console.error("Erro ao carregar perfil:", error));
+        }
+    }, [user]);
 
-    try {
-      const res = await api.put(`/clientes/${clienteId}`, formData);
-      
-      // CORREÇÃO AQUI: res.data contém a resposta do seu backend
-      if (res.data && res.data.fotoUrl) {
-        setFotoUrl(res.data.fotoUrl); // Atualiza a imagem na tela com a nova URL da Azure
-      }
-      
-      alert('Upgrade de perfil concluído com sucesso!');
-      setNovaFoto(null); // Limpa o campo de seleção de arquivo
-    } catch (err) {
-      console.error("Erro detalhado:", err);
-      alert('Falha na sincronização do perfil. Verifique o console.');
-    }
-  };
+    const handleAvatarClick = () => {
+        const confirmar = window.confirm("Deseja alterar sua foto de perfil?");
+        if (confirmar) {
+            fileInputRef.current.click();
+        }
+    };
 
-  return (
-    <div className="container" style={{ maxWidth: '600px' }}>
-      <h2 className="footer-title">Identidade Cibernética</h2>
-      
-      <div className="section-highlight" style={{ textAlign: 'center', borderRadius: '15px', padding: '30px' }}>
+    const handleFileChange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append('foto', file);
         
-        {/* Visualização da Foto */}
-        <div style={{ marginBottom: '20px' }}>
-          <img 
-            src={fotoUrl || 'https://via.placeholder.com/150'} 
-            alt="Perfil" 
-            style={{ 
-              width: '150px', 
-              height: '150px', 
-              borderRadius: '50%', 
-              border: '3px solid var(--accent-blue)', 
-              objectFit: 'cover' 
-            }} 
-          />
+        setUploading(true);
+        try {
+            const response = await api.post(`/clientes/${user.id}/upload-foto`, formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+
+            setPerfil(prev => ({ ...prev, foto_url: response.data.foto_url }));
+            setMensagem({ texto: 'Bio-assinatura visual atualizada!', tipo: 'sucesso' });
+        } catch (error) {
+            setMensagem({ texto: 'Erro no upload para o container Azure.', tipo: 'erro' });
+        } finally {
+            setUploading(false);
+        }
+    };
+
+    const handleAtualizar = async (e) => {
+        e.preventDefault();
+        try {
+            // 3. Enviamos o objeto perfil completo para bater com a rota PUT do server
+            await api.put(`/clientes/${user.id}`, perfil);
+            setMensagem({ texto: 'Registros sincronizados com sucesso!', tipo: 'sucesso' });
+        } catch (error) {
+            console.error(error);
+            setMensagem({ texto: 'Falha na gravação dos dados (Erro 500).', tipo: 'erro' });
+        }
+    };
+
+    return (
+        <div className="perfil-container">
+            <div className="perfil-card">
+                <div className="perfil-header">
+                    <div className="avatar-section" onClick={handleAvatarClick}>
+                        <div className={`avatar-wrapper ${uploading ? 'scanning' : ''}`}>
+                            <img 
+                                src={perfil.foto_url || 'https://via.placeholder.com/150'} 
+                                alt="Avatar" 
+                            />
+                            <div className="avatar-overlay">ALTERAR</div>
+                        </div>
+                        <input 
+                            type="file" 
+                            ref={fileInputRef} 
+                            onChange={handleFileChange} 
+                            style={{ display: 'none' }} 
+                            accept="image/*"
+                        />
+                    </div>
+                    <h2 className="cyber-id">USER_ID: {user?.nome?.toUpperCase()}</h2>
+                </div>
+
+                {mensagem.texto && <div className={`alert ${mensagem.tipo}`}>{mensagem.texto}</div>}
+
+                <form onSubmit={handleAtualizar} className="perfil-form-stacked">
+                    <div className="form-item">
+                        <label>NOME COMPLETO</label>
+                        <input 
+                            type="text" 
+                            value={perfil.nome || ''} 
+                            onChange={e => setPerfil({...perfil, nome: e.target.value})} 
+                        />
+                    </div>
+
+                    <div className="form-item">
+                        <label>E-MAIL</label>
+                        <input type="email" value={perfil.email || ''} disabled />
+                    </div>
+
+                    <div className="form-item">
+                        <label>TELEFONE</label>
+                        <input 
+                            type="text" 
+                            value={perfil.telefone || ''} 
+                            onChange={e => setPerfil({...perfil, telefone: e.target.value})} 
+                        />
+                    </div>
+
+                    {/* Campos de endereço unificados com o HUD */}
+                    <div className="form-item">
+                        <label>CEP</label>
+                        <input 
+                            type="text" 
+                            value={perfil.cep || ''} 
+                            onChange={e => setPerfil({...perfil, cep: e.target.value})} 
+                        />
+                    </div>
+
+                    <div className="form-item">
+                        <label>LOGRADOURO</label>
+                        <textarea 
+                            value={perfil.endereco || ''} 
+                            onChange={e => setPerfil({...perfil, endereco: e.target.value})} 
+                            rows="2" 
+                        />
+                    </div>
+
+                    <button type="submit" className="btn-save">SALVAR ALTERAÇÕES</button>
+                </form>
+            </div>
         </div>
-
-        <form onSubmit={handleAtualizar} style={{ display: 'grid', gap: '15px', textAlign: 'left' }}>
-          <div className="form-group">
-            <label>Nome Completo</label>
-            <input type="text" value={nome} onChange={e => setNome(e.target.value)} required />
-          </div>
-          
-          <div className="form-group">
-            <label>E-mail de Contato</label>
-            <input type="email" value={email} onChange={e => setEmail(e.target.value)} required />
-          </div>
-
-          <div className="form-group">
-            <label>Telefone</label>
-            <input type="text" value={telefone} onChange={e => setTelefone(e.target.value)} />
-          </div>
-
-          <div className="form-group">
-            <label>Endereço</label>
-            <input type="text" value={endereco} onChange={e => setEndereco(e.target.value)} />
-          </div>
-
-          <div className="form-group">
-            <label>Nova Foto de Perfil (Opcional)</label>
-            <input 
-              type="file" 
-              onChange={e => setNovaFoto(e.target.files[0])} 
-              accept="image/*"
-            />
-          </div>
-
-          <button type="submit" style={{ marginTop: '10px' }}>
-            SALVAR ALTERAÇÕES
-          </button>
-        </form>
-      </div>
-    </div>
-  );
-};
+    );
+}
 
 export default Perfil;

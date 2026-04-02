@@ -1,0 +1,175 @@
+/* Layout Principal */
+.perfil-container {
+    display: flex;
+    justify-content: center;
+    padding: 40px;
+    background-color: #050505;
+    min-height: 100vh;
+}
+
+.perfil-card {
+    background: #0f0f12;
+    border: 1px solid #1f1f23;
+    border-top: 4px solid #007BFF;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 500px;
+    padding: 40px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+}
+
+/* Header e Avatar */
+.perfil-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.avatar-wrapper {
+    width: 130px;
+    height: 130px;
+    margin: 0 auto;
+    border-radius: 50%;
+    border: 2px solid #007bff;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.avatar-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-overlay {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background: rgba(0, 123, 255, 0.8);
+    color: #fff;
+    font-size: 0.7rem;
+    padding: 5px 0;
+    opacity: 0;
+    transition: 0.3s;
+}
+
+.avatar-wrapper:hover .avatar-overlay {
+    opacity: 1;
+}
+
+.avatar-wrapper:hover {
+    box-shadow: 0 0 20px rgba(0, 123, 255, 0.5);
+}
+
+.cyber-id {
+    color: #fff;
+    letter-spacing: 2px;
+    margin: 15px 0 5px;
+    font-size: 1.2rem;
+}
+
+.role-badge {
+    background: #007BFF;
+    color: #fff;
+    display: inline-block;
+    padding: 2px 10px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+
+/* Formulário Stacked (Um sobre o outro) */
+.perfil-form-stacked {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.form-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-item label {
+    color: #555;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.form-item input, 
+.form-item textarea {
+    background: #000;
+    border: 1px solid #222;
+    padding: 14px;
+    color: #eee;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    transition: border-color 0.3s;
+}
+
+.form-item input:focus, 
+.form-item textarea:focus {
+    border-color: #007BFF;
+    outline: none;
+}
+
+.form-item input:disabled {
+    color: #444;
+    border-color: #111;
+    cursor: not-allowed;
+}
+
+/* Botões e Alertas */
+.btn-save {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 18px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: 0.3s;
+}
+
+.btn-save:hover {
+    background: #0056b3;
+    box-shadow: 0 0 15px rgba(0, 123, 255, 0.4);
+}
+
+.alert {
+    padding: 12px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.sucesso { 
+    background: rgba(40, 167, 69, 0.1); 
+    color: #28a745; 
+    border: 1px solid #28a745; 
+}
+
+.erro { 
+    background: rgba(220, 53, 69, 0.1); 
+    color: #dc3545; 
+    border: 1px solid #dc3545; 
+}
+
+/* Animações */
+.scanning {
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}

@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { trpc, trpcClient } from './utils/trpc';
-import { CartProvider } from './context/CartContext'; // Importe o Provider
+import { CartProvider } from './context/CartContext';
+import { AuthProvider } from './context/AuthContext';
 import BackButton from './components/BackButton';
 
 // --- ESTILOS ---
@@ -10,10 +11,13 @@ import './index.css';
 
 // --- COMPONENTES ---
 import Navbar from './components/Navbar';
+import ProtectedRoute from './components/ProtectedRoute';
 
 // --- PÁGINAS PÚBLICAS / CLIENTE ---
 import Home from './pages/Home';
+import Login from './pages/Login'; 
 import Perfil from './pages/Perfil';
+import Cadastro from './pages/Cadastro';
 import Produtos from './pages/Produtos';
 import Carrinho from './pages/Carrinho';
 import Checkout from './pages/Checkout';
@@ -21,6 +25,7 @@ import Pedidos from './pages/Pedidos';
 
 // --- PÁGINAS ADMIN (DASHBOARD) ---
 import Admin from './pages/Admin';
+import PerfilHUD from './pages/PerfilHUD'; // Importado corretamente
 import AdminProdutos from './pages/AdminProdutos';
 import AdminClientes from './pages/AdminClientes';
 import AdminPedidos from './pages/AdminPedidos';
@@ -31,53 +36,108 @@ import EditCliente from './pages/EditCliente';
 import EditPedido from './pages/EditPedido';
 
 function App() {
-  // Inicializa o cliente do React Query com configurações otimizadas
   const [queryClient] = useState(() => new QueryClient({
     defaultOptions: {
       queries: {
-        refetchOnWindowFocus: false, // Evita recarregar dados ao trocar de aba
-        retry: 1, // Tenta novamente apenas 1 vez em caso de falha
+        refetchOnWindowFocus: false,
+        retry: 1, 
       },
     },
   }));
 
   return (
-    <trpc.Provider client={trpcClient} queryClient={queryClient}>
-      <QueryClientProvider client={queryClient}>
-        <CartProvider>
-        <Router>          
-          <Navbar />
-          <BackButton />
-          <Routes>
-            {/* --- ROTAS PÚBLICAS E CLIENTE --- */}
-            <Route path="/" element={<Home />} />
-            <Route path="/perfil" element={<Perfil />} />
-            <Route path="/produtos" element={<Produtos />} />
-            <Route path="/carrinho" element={<Carrinho />} />
-            <Route path="/checkout" element={<Checkout />} />
-            <Route path="/pedidos" element={<Pedidos />} />
+    <AuthProvider>
+      <trpc.Provider client={trpcClient} queryClient={queryClient}>
+        <QueryClientProvider client={queryClient}>
+          <CartProvider>
+            <Router>          
+              <Navbar />
+              <BackButton />
+              <Routes>
+                {/* --- ROTAS PÚBLICAS --- */}
+                <Route path="/" element={<Home />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/cadastro" element={<Cadastro />} />
+                <Route path="/produtos" element={<Produtos />} />
+                <Route path="/carrinho" element={<Carrinho />} />
 
-            {/* --- ROTAS ADMIN PRINCIPAL --- */}
-            <Route path="/admin" element={<Admin />} />
+                {/* --- ROTAS DO CLIENTE --- */}
+                <Route path="/perfil" element={
+                  <ProtectedRoute>
+                    <Perfil />
+                  </ProtectedRoute>
+                } />
+                <Route path="/checkout" element={
+                  <ProtectedRoute>
+                    <Checkout />
+                  </ProtectedRoute>
+                } />
+                <Route path="/pedidos" element={
+                  <ProtectedRoute>
+                    <Pedidos />
+                  </ProtectedRoute>
+                } />
 
-            {/* --- GERENCIAMENTO DE TABELAS --- */}
-            <Route path="/admin/produtos" element={<AdminProdutos />} />
-            <Route path="/admin/clientes" element={<AdminClientes />} />
-            <Route path="/admin/pedidos" element={<AdminPedidos />} />
-            
-            {/* --- ROTAS DE EDIÇÃO (REST / AXIOS) --- */}
-            {/* Padronizei os caminhos para ficarem fáceis de identificar no Admin */}
-            <Route path="/admin/produtos/editar/:id" element={<EditProduto />} />
-            <Route path="/admin/clientes/editar/:id" element={<EditCliente />} />
-            <Route path="/admin/pedidos/editar/:id" element={<EditPedido />} />
+                {/* --- ROTAS DO ADMIN --- */}
+                {/* CORREÇÃO AQUI: <PerfilHUD /> com P maiúsculo e rota minúscula para bater com a Navbar */}
+                <Route path="/perfil-hud" element={
+                  <ProtectedRoute requiredRole="admin">
+                    <PerfilHUD /> 
+                  </ProtectedRoute>
+                } />
+                
+                <Route path="/admin" element={
+                  <ProtectedRoute requiredRole="admin">
+                    <Admin />
+                  </ProtectedRoute>
+                } />
+                
+                {/* Tabelas do Admin */}
+                <Route path="/admin/produtos" element={
+                  <ProtectedRoute requiredRole="admin">
+                    <AdminProdutos />
+                  </ProtectedRoute>
+                } />
+                <Route path="/admin/clientes" element={
+                  <ProtectedRoute requiredRole="admin">
+                    <AdminClientes />
+                  </ProtectedRoute>
+                } />
+                <Route path="/admin/pedidos" element={
+                  <ProtectedRoute requiredRole="admin">
+                    <AdminPedidos />
+                  </ProtectedRoute>
+                } />
+                
+                {/* Edição do Admin */}
+                <Route path="/admin/produtos/editar/:id" element={
+                  <ProtectedRoute requiredRole="admin">
+                    <EditProduto />
+                  </ProtectedRoute>
+                } />
+                <Route path="/admin/clientes/editar/:id" element={
+                  <ProtectedRoute requiredRole="admin">
+                    <EditCliente />
+                  </ProtectedRoute>
+                } />
+                <Route path="/admin/pedidos/editar/:id" element={
+                  <ProtectedRoute requiredRole="admin">
+                    <EditPedido />
+                  </ProtectedRoute>
+                } />
 
-            {/* Rota legada (caso algum botão ainda aponte para /admin/Edit/id) */}
-            <Route path="/admin/editar/:id" element={<EditProduto />} />
-          </Routes>
-        </Router>
-        </CartProvider>
-      </QueryClientProvider>
-    </trpc.Provider>
+                {/* Rota legada/extra */}
+                <Route path="/admin/editar/:id" element={
+                  <ProtectedRoute requiredRole="admin">
+                    <EditProduto />
+                  </ProtectedRoute>
+                } />
+              </Routes>
+            </Router>
+          </CartProvider>
+        </QueryClientProvider>
+      </trpc.Provider>
+    </AuthProvider>
   );
 }
 

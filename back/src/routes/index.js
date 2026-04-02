@@ -37,6 +37,7 @@ router.get('/clientes/:id', async (req, res) => {
     }
 });
 
+
 // 3. CADASTRAR NOVO CLIENTE
 router.post('/clientes', upload.single('foto'), async (req, res) => {
     try {

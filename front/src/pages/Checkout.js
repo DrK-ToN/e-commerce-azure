@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Importação para navegação limpa
+import React, { useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useCart } from '../hooks/useCart';
 import api from '../services/api';
+import { AuthContext } from '../context/AuthContext'; // Importando a memória de login
 
 const Checkout = () => {
   const { cart, total, clearCart } = useCart();
+  const { user } = useContext(AuthContext); // Puxando quem está logado
   const navigate = useNavigate();
   
   const [endereco, setEndereco] = useState('');
@@ -14,17 +16,22 @@ const Checkout = () => {
   const finalizarCompra = async (e) => {
     e.preventDefault();
     
+    // 🚦 TRAVA DE SEGURANÇA: Exige login para comprar
+    if (!user) {
+        alert("Acesso negado: Você precisa fazer login para finalizar a transação!");
+        navigate('/login');
+        return;
+    }
+
     if (cart.length === 0) return alert("Seu inventário de compra está vazio!");
     
     setLoading(true);
 
-    // Formatamos os dados para bater exatamente com a rota POST /checkout do backend
     const dadosPedido = {
-      cliente_id: 1, // ID Simulado (Em produção viria do seu AuthContext)
+      cliente_id: user.id, // 👈 AGORA A COMPRA SAI NO NOME DELE DE FATO
       total: parseFloat(total),
       pagamento: pagamento,
       endereco: endereco,
-      // Enviamos apenas o necessário para o loop do backend
       itens: cart.map(item => ({
         id: item.id,
         quantity: item.quantity,
@@ -33,13 +40,12 @@ const Checkout = () => {
     };
 
     try {
-      // Chamada para a rota transacional que criamos no index.js
       const response = await api.post('/checkout', dadosPedido);
       
       if (response.data.pedidoId) {
         alert(`TRANSAÇÃO CONCLUÍDA! Pedido #${response.data.pedidoId} registrado no log.`);
-        clearCart(); // Limpa o estado e o localStorage
-        navigate('/'); // Navegação via React Router
+        clearCart(); 
+        navigate('/'); 
       }
     } catch (err) {
       console.error("Erro no checkout:", err);

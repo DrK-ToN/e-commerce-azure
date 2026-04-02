@@ -1,15 +1,27 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../hooks/useCart';
+import { AuthContext } from '../context/AuthContext'; // Importando a "memória" de autenticação
 
 const Carrinho = () => {
   const { cart, removeFromCart, updateQuantity, total } = useCart();
+  const { user } = useContext(AuthContext); // Pegando o usuário logado
   const navigate = useNavigate();
 
   // Função para evitar que a quantidade seja menor que 1
   const handleUpdateQty = (id, delta, currentQty) => {
     if (currentQty + delta < 1) return;
     updateQuantity(id, delta);
+  };
+
+  // 🚦 GUARDA DE TRÂNSITO: Valida se o usuário pode ir para o checkout
+  const handleCheckoutClick = () => {
+    if (!user) {
+      alert("Acesso restrito: Você precisa fazer login para transferir os créditos e concluir a transação.");
+      navigate('/login');
+    } else {
+      navigate('/checkout');
+    }
   };
 
   if (cart.length === 0) {
@@ -114,8 +126,9 @@ const Carrinho = () => {
               CONTINUAR COMPRANDO
             </button>
             
+            {/* Botão de transação atualizado com a trava de segurança */}
             <button 
-              onClick={() => navigate('/checkout')} 
+              onClick={handleCheckoutClick} 
               className="btn-primary" 
               style={{ padding: '15px 40px', fontWeight: 'bold', fontSize: '1rem' }}
             >

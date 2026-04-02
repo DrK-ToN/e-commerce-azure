@@ -1,0 +1,206 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 5%;
+  background-color: var(--bg-dark);
+  border-bottom: 1px solid rgba(64, 162, 216, 0.2); /* Brilho sutil azul */
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  backdrop-filter: blur(10px); /* Efeito de vidro se o fundo for semi-transparente */
+}
+
+.nav-logo a {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--accent-blue);
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Efeito de brilho no Logo ao passar o mouse */
+.nav-logo a:hover {
+  text-shadow: 0 0 10px var(--accent-blue);
+}
+
+.nav-links {
+  display: flex;
+  list-style: none;
+  align-items: center;
+  gap: 2rem;
+}
+
+.nav-links li a {
+  color: var(--text-main);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+}
+
+/* Hover nos links */
+.nav-links li a:hover {
+  color: var(--accent-blue);
+}
+
+.nav-cart {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  color: var(--accent-blue, #40A2D8);
+  transition: transform 0.2s;
+}
+
+.nav-cart:hover {
+  transform: scale(1.1);
+}
+
+.cart-badge {
+  position: absolute;
+  top: -5px;
+  right: -8px;
+  background-color: #ff4d4d; /* Vermelho Alerta */
+  color: white;
+  font-size: 0.7rem;
+  font-weight: bold;
+  border-radius: 50%;
+  padding: 2px 6px;
+  min-width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 10px rgba(255, 77, 77, 0.5);
+  border: 1px solid var(--bg-dark, #000);
+}
+
+/* Agrupa Perfil e Sair */
+.user-controls {
+  display: flex;
+  align-items: center;
+  gap: 5px; /* Espaço pequeno entre os dois */
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  padding: 2px 5px;
+}
+
+/* Container para agrupar Perfil e Sair na mesma linha */
+.profile-container {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.05); /* Um fundo sutil para o grupo */
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Ajuste no link de perfil para não ocupar espaço demais */
+.profile-link {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  text-decoration: none;
+  font-size: 0.9rem;
+  padding: 8px 12px;
+  border: none !important; /* Remove bordas individuais se houver */
+}
+
+/* Estilo do botão de Sair */
+.logout-btn {
+  background: transparent;
+  border: none;
+  color: #ff4d4d; /* Vermelho para indicar saída */
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 10px;
+  transition: all 0.2s;
+  border-left: 1px solid rgba(255, 255, 255, 0.2); /* Divisória entre Perfil e Sair */
+}
+
+.logout-btn:hover {
+  color: #ff0000;
+  background: rgba(255, 0, 0, 0.1); /* Efeito de brilho vermelho ao fundo */
+  transform: scale(1.05);
+}
+
+/* Botão de Login/Perfil em destaque */
+.login-btn {
+  border: 1px solid var(--accent-blue);
+  padding: 8px 20px;
+  border-radius: 4px;
+  background: transparent;
+  transition: all 0.3s ease !important;
+}
+
+.login-btn:hover {
+  background: var(--accent-blue) !important;
+  color: white !important;
+  box-shadow: 0 0 15px var(--accent-blue);
+}
+
+/* Responsividade básica para mobile */
+@media (max-width: 768px) {
+  .nav-links {
+    gap: 1rem;
+  }
+  
+  .nav-links li a {
+    font-size: 0.8rem;
+  }
+}
+
+/* ... manter o resto e adicionar estes: */
+
+.avatar-wrapper {
+    width: 130px;
+    height: 130px;
+    margin: 0 auto 15px;
+    border-radius: 50%;
+    border: 3px solid #007BFF;
+    position: relative; /* Para o overlay funcionar */
+    overflow: hidden;
+    cursor: pointer;
+    background: #000;
+    transition: transform 0.2s;
+}
+
+.avatar-wrapper:hover {
+    transform: scale(1.05);
+}
+
+.avatar-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 123, 255, 0.6); /* Azul semitransparente */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    opacity: 0; /* Invisível por padrão */
+    transition: opacity 0.3s;
+    color: white;
+    font-weight: bold;
+    font-size: 0.8rem;
+}
+
+.avatar-wrapper:hover .avatar-overlay {
+    opacity: 1; /* Aparece no hover */
+}
+
+.perfil-avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}

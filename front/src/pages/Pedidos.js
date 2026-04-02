@@ -1,26 +1,32 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react'; // Adicionado useContext
 import api from '../services/api';
+import { AuthContext } from '../context/AuthContext'; // Importando o contexto
 import { FaBox, FaCreditCard, FaCalendarAlt, FaMicrochip } from 'react-icons/fa';
 import '../styles/Pedidos.css';
 
 const Pedidos = () => {
   const [pedidos, setPedidos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { user } = useContext(AuthContext); // Pegando o usuário logado
 
   useEffect(() => {
-    // Busca os pedidos do cliente (ID 1 simulado)
-    api.get('/pedidos/cliente/1')
-      .then((res) => {
-        // Garante que o que vai para o estado é um array
-        setPedidos(Array.isArray(res.data) ? res.data : []);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Erro ao carregar registros:", err);
-        setPedidos([]); // Evita que pedidos fique como undefined
-        setLoading(false);
-      });
-  }, []);
+    // Só faz a requisição se o usuário estiver carregado e tiver um ID
+    if (user && user.id) {
+      api.get(`/pedidos/cliente/${user.id}`) // Usando o ID real do usuário logado
+        .then((res) => {
+          setPedidos(Array.isArray(res.data) ? res.data : []);
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.error("Erro ao carregar registros:", err);
+          setPedidos([]);
+          setLoading(false);
+        });
+    } else if (!user) {
+      // Se não houver usuário (ex: deslogou enquanto estava na página)
+      setLoading(false);
+    }
+  }, [user]); // O efeito roda novamente se o usuário mudar
 
   if (loading) {
     return (
@@ -30,11 +36,20 @@ const Pedidos = () => {
     );
   }
 
+  // Se por algum motivo o usuário acessar sem estar logado
+  if (!user) {
+    return (
+      <div className="container empty-box">
+        <p>Acesso negado. Por favor, faça login para ver seus logs de transação.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="container pedidos-container">
       <header className="pedidos-header">
         <h1 className="footer-title">HISTÓRICO DE AQUISIÇÕES</h1>
-        <p>Logs de transações autorizadas para este usuário.</p>
+        <p>Logs de transações autorizadas para o usuário: <strong>{user.nome}</strong></p>
       </header>
 
       <div className="pedidos-list">
@@ -77,7 +92,7 @@ const Pedidos = () => {
           ))
         ) : (
           <div className="empty-box">
-            <p>Nenhum registro de compra encontrado no sistema.</p>
+            <p>Nenhum registro de compra encontrado no sistema para {user.nome}.</p>
           </div>
         )}
       </div>

@@ -1,8 +1,17 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { AuthContext } from '../context/AuthContext'; // Importando a "memória"
 import maoCromo from '../assets/cromo.webp';
 
 const Home = () => {
+  const { user, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/'); // Garante que fica na Home ou recarrega o estado
+  };
+
   return (
     <div className="container">
       {/* 1. SEÇÃO HERO */}
@@ -20,9 +29,24 @@ const Home = () => {
             <Link to="/produtos" className="btn-primary" style={{ padding: '12px 30px', textDecoration: 'none' }}>
               VER CATÁLOGO
             </Link>
-            <Link to="/perfil" className="btn-secondary" style={{ padding: '12px 30px', textDecoration: 'none' }}>
-              MEU PERFIL
-            </Link>
+            
+            {/* 🚦 CONTROLE DE ACESSO NA HOME 🚦 */}
+            {user ? (
+              // Usuário Logado: Vê Perfil e Sair(já tem na navbar)
+              <>
+                
+              </>
+            ) : (
+              // Usuário Deslogado: Vê Entrar e Cadastrar
+              <>
+                <Link to="/login" className="btn-secondary" style={{ padding: '12px 30px', textDecoration: 'none' }}>
+                  ENTRAR
+                </Link>
+                <Link to="/cadastro" className="btn-secondary" style={{ padding: '12px 30px', textDecoration: 'none', border: '1px solid #fff', color: '#fff' }}>
+                  CADASTRAR
+                </Link>
+              </>
+            )}
           </div>
         </div>
 

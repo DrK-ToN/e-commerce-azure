@@ -1,0 +1,176 @@
+/* CAMADA 1: Fundo da página toda escura */
+.hud-page-wrapper {
+    background-color: #0f171e;
+    min-height: 80vh;
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: space-evenly;
+    align-items: center;
+    overflow: hidden;
+}
+
+/* CAMADA 2: O Container do HUD (Tamanho Fixo da Imagem) */
+.hud-main-container {
+    width: 1000px; /* Largura exata da imagem */
+    height: 600px; /* Altura exata da imagem */
+    background-image: url('../assets/bggold2077.webp'); /* COLOQUE O CAMINHO DA SUA IMAGEM AQUI */
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    display: absolute;
+}
+
+/* CONFIGURAÇÃO GERAL DOS TEXTOS (Contraste Neon) */
+.hud-main-container {
+    color: #312bd4;
+    font-family: 'Courier New', Courier, monospace;
+    text-transform: uppercase;
+}
+
+.theme-selector{
+    position: absolute; top: 150px; left: 20px; z-index: 10;
+}
+
+/* CAMADA 3: Elementos Fixos sobre a imagem */
+
+/* Foto no Círculo */
+.hud-overlay-avatar {
+        position: absolute;
+    bottom: 67px;
+    left: 77px;
+    width: 117px;
+    height: 116px;
+    cursor: pointer;
+}
+.hud-overlay-avatar img {
+    width: 100%; height: 100%; border-radius: 50%; object-fit: cover;
+}
+
+/* Nome no Retângulo Inferior Maior */
+.hud-overlay-name {
+    position: absolute;
+    bottom: 104px;
+    left: 293px;
+    width: 380px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+/* Clima no Retângulo Inferior Menor */
+.hud-overlay-weather {
+    position: absolute;
+    bottom: 97px;
+    right: 103px;
+    width: 230px;
+    font-size: 0.8rem;
+    text-align: center;
+}
+
+/* Caixas Transparentes do Meio */
+.hud-overlay-box {
+    position: absolute;
+    background: transparent;
+}
+
+.cyber-select-btn {
+    display: absolute; position: relative; pointer-events: auto; width: 105px;
+    background: rgba(0, 0, 0, 0.8); color: rgb(64, 162, 216);
+    border: 1px solid rgb(64, 162, 216); padding: 8px 20px;
+    font-family: Orbitron, sans-serif; border-radius: 4px;
+    font-size: 0.75rem; cursor: pointer; text-transform: uppercase;
+    clip-path: polygon(0px 0px, 100% 0px, 100% 70%, 95% 100%, 0px 100%);
+    transition: 0.3s; box-shadow: rgba(0, 0, 0, 0.5) 0px 0px 10px;
+}
+
+
+.box-geo { top: 215px; left: 90px; height: 180px; width: 230px; font-size: 0.72rem; }
+.box-comms { top: 195px; left: 420px; height: 200px; width: 200px; font-size: 0.7rem; }
+.box-stats { top: 211px; right: 90px; width: 180px; font-size: 0.8rem; }
+
+/* Inputs Transparentes */
+.hud-input-row { display: flex; border-bottom: 1px solid rgba(255, 157, 0, 0); }
+.hud-input-row input, .hud-input-clean {
+    background: rgba(255, 157, 0, 0.053); border: none; color: #fff;
+    height: 30px; width: 100%; margin-left: 10px; outline: none; font-family: inherit;
+}
+
+/* Dashboard Stats */
+.hud-stat { margin-bottom: 15px; display: flex; flex-direction: column; }
+.hud-stat strong { font-size: 1.1rem; color: #fff; text-shadow: 0 0 5px #ff9d00; }
+
+/* Botão Salvar (Círculo Superior Direito) */
+.hud-overlay-btn-save {
+    position: absolute;
+    top: 79px;
+    right: 111px;
+    width: 80px;
+    height: 80px;
+    background: #d0b9253e;
+    border: 2px solid #ff9d00;
+    text-shadow: 0 0 5px #000000;
+    border-radius: 50%;
+    color: #312bd4;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+}
+.hud-overlay-btn-save :hover {
+    background: rgba(255, 157, 0, 0);
+    box-shadow: 0 0 20px #ff9d00;
+}
+/* Definição dos Temas */
+.hud-main-container[data-theme="blue"] {
+    --hud-bg: url('../assets/bgblue2077.webp');
+    --hud-text: #ff9d00; /* Laranja */
+    text-shadow: 0 0 5px #000000;
+}
+.hud-main-container[data-theme="gold"] {
+    --hud-bg: url('../assets/bggold2077.webp');
+    --hud-text: #312bd4; /* Azul */
+    text-shadow: 0 0 1px #3b3838;
+}
+.hud-main-container[data-theme="red"] {
+    --hud-bg: url('../assets/bgred2077.webp');
+    --hud-text: #00ff41; /* Verde */
+    text-shadow: 0 0 5px #000000;
+}
+.hud-main-container[data-theme="green"] {
+    --hud-bg: url('../assets/bggreen2077.webp');
+    --hud-text: #ff0000; /* Vermelho */
+    text-shadow: 0 0 5px #000000;
+}
+.hud-main-container[data-theme="purple"] {
+    --hud-bg: url('../assets/bgpurple2077.webp');
+    --hud-text: #ffff00; /* Amarelo */
+    text-shadow: 0 0 5px #000000;
+}
+.hud-main-container[data-theme="pink"] {
+    --hud-bg: url('../assets/bgpink2077.webp');
+    --hud-text: #00ffff; /* Ciano/Aqua */
+}
+
+/* Aplicando as variáveis nas classes existentes */
+.hud-main-container {
+    background-image: var(--hud-bg) !important;
+    color: var(--hud-text) !important;
+    /* ... mantenha o restante das suas propriedades ... */
+}
+
+/* Forçar a cor do texto nos elementos específicos que você citou */
+.hud-overlay-name, 
+.hud-overlay-weather, 
+.hud-overlay-box label, 
+.hud-overlay-box span, 
+.hud-stat span,
+.hud-overlay-btn-save {
+    color: var(--hud-text);
+}
+
+/* Ajuste do botão de salvar para usar a borda do tema também */
+.hud-overlay-btn-save {
+    border-color: var(--hud-text);
+}
