@@ -10,19 +10,21 @@ require('dotenv').config();
 const app = express();
 
 // --- CORS UNIFICADO (Sem barras no final e sem duplicatas) ---
-app.use(cors({
-  origin: ['https://e-commerce-azure-git-main-everton-freitas-projects-2b6b7501.vercel.app',
-  'https://e-commerce-azure-cfrqci3zi-everton-freitas-projects-2b6b7501.vercel.app',
-  'https://e-commerce-azure-jet-rho.vercel.app', // Permite que qualquer URL da Vercel acesse a API na P1
-  'http://localhost:3001',
+const corsOptions = {
+  origin: [
+    'https://e-commerce-azure-git-main-everton-freitas-projects-2b6b7501.vercel.app',
+    'https://e-commerce-azure-cfrqci3zi-everton-freitas-projects-2b6b7501.vercel.app',
+    'https://e-commerce-azure-jet-rho.vercel.app',
+    'http://localhost:3001',
+    'http://localhost:3000',
   ],
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
-}));
+};
 
-// Responde o preflight para todas as rotas
-app.options('/{*splat}', cors());
+app.use(cors(corsOptions));
+app.options('/{*splat}', cors(corsOptions)); // 👈 mesmas opções aqui
 
 app.use(express.json());
 
