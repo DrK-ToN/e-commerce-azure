@@ -102,7 +102,7 @@ const EditCliente = () => {
         {/* Seção de Foto */}
         <div className="image-preview-container" style={{ marginBottom: '20px', textAlign: 'center' }}>
           <img 
-            src={fotoUrlAtual || 'https://via.placeholder.com/150'} 
+            src={fotoUrlAtual || 'https://placehold.co/150'} 
             alt="Avatar" 
             className="preview-img" 
             style={{ width: '120px', height: '120px', borderRadius: '50%', border: '2px solid #ff9d00', objectFit: 'cover' }}

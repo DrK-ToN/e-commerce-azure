@@ -79,6 +79,7 @@ const appRouter = t.router({
       return { totalProdutos: 0, totalClientes: 0, totalPedidos: 0, faturamentoTotal: 0, pedidosRecentes: [] };
     }
   }),
+  
 
   'produtos.list': adminProcedure.query(async () => {
     try {
@@ -88,6 +89,14 @@ const appRouter = t.router({
       console.error("Erro ao listar produtos no tRPC:", error);
       return [];
     }
+  }),
+
+  // Dentro do seu appRouter no server.js
+'produtos.delete': adminProcedure
+  .input(z.object({ id: z.number() }))
+  .mutation(async ({ input }) => {
+    await pool.query('DELETE FROM produtos WHERE id = ?', [input.id]);
+    return { success: true };
   }),
 
   'clientes.list': adminProcedure.query(async () => {
@@ -136,6 +145,49 @@ const appRouter = t.router({
   }),
 });
 
+// Function to upload to Azure Blob Storage and optionally delete old blob
+async function uploadToAzureBlob(file, blobNamePrefix, oldImageUrl = null) {
+    if (!AZURE_CONNECTION_STRING) {
+        console.error("AZURE_STORAGE_CONNECTION_STRING is not set.");
+        throw new Error("Azure Storage connection string is missing.");
+    }
+    const blobServiceClient = BlobServiceClient.fromConnectionString(AZURE_CONNECTION_STRING);
+    const containerClient = blobServiceClient.getContainerClient(containerName);
+
+    // GARANTIR QUE O CONTAINER EXISTA (Causa comum de erro 500)
+    // Isso cria o container se ele não existir e o torna público para blobs.
+    const createContainerResponse = await containerClient.createIfNotExists({
+        access: 'blob' 
+    });
+    if (createContainerResponse.succeeded) {
+        console.log(`Container "${containerName}" criado ou já existente.`);
+    }
+
+    // Delete old blob if provided and it's an Azure Blob URL
+    if (oldImageUrl && oldImageUrl.includes(containerName)) {
+        try {
+            const urlParts = oldImageUrl.split('/');
+            const oldBlobName = urlParts[urlParts.length - 1];
+            const oldBlockBlobClient = containerClient.getBlockBlobClient(oldBlobName);
+            await oldBlockBlobClient.deleteIfExists();
+            console.log(`Old blob ${oldBlobName} deleted.`);
+        } catch (e) {
+            console.log("Aviso: Old blob not found or could not be deleted:", e.message);
+        }
+    }
+
+    // Upload new blob
+    // Sanitize the filename to prevent issues with special characters in the blob name
+    const sanitizedFileName = file.originalname.replace(/[^a-zA-Z0-9._-]/g, '_');
+    const blobName = `${blobNamePrefix}-${Date.now()}-${sanitizedFileName}`;
+    const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+    await blockBlobClient.uploadData(file.buffer, {
+        blobHTTPHeaders: { blobContentType: file.mimetype }
+    });
+    console.log(`New blob ${blobName} uploaded.`);
+    return blockBlobClient.url;
+}
+
 
 // ==========================================
 //    NOVA ROTA: UPLOAD DE FOTO (AZURE)
@@ -154,7 +206,7 @@ app.post('/api/clientes/:id/upload-foto', upload.single('foto'), async (req, res
         const blobServiceClient = BlobServiceClient.fromConnectionString(AZURE_CONNECTION_STRING);
         const containerClient = blobServiceClient.getContainerClient(containerName);
         
-        // 1. Limpeza: Buscar foto antiga para deletar
+        // 1. Limpeza: Buscar foto antiga para deletar (se for um blob do Azure)
         const [rows] = await pool.execute('SELECT foto_url FROM clientes WHERE id = ?', [clienteId]);
         if (rows[0]?.foto_url && rows[0].foto_url.includes(containerName)) {
             try {
@@ -165,7 +217,7 @@ app.post('/api/clientes/:id/upload-foto', upload.single('foto'), async (req, res
             } catch (e) { console.log("Aviso: Foto antiga não encontrada no Azure."); }
         }
 
-        // 2. Upload da Nova Foto
+        // 2. Upload da Nova Foto (avatar)
         const blobName = `avatar-${clienteId}-${Date.now()}.jpg`;
         const blockBlobClient = containerClient.getBlockBlobClient(blobName);
         await blockBlobClient.uploadData(file.buffer, {
@@ -221,6 +273,73 @@ app.get('/api/produtos', async (req, res) => {
     const [rows] = await pool.query('SELECT * FROM produtos');
     res.json(rows || []);
   } catch (error) { res.status(500).json([]); }
+});
+
+app.get('/api/produtos/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const [rows] = await pool.execute('SELECT * FROM produtos WHERE id = ?', [id]);
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "Produto não encontrado" });
+    }
+    res.json(rows[0]);
+  } catch (error) {
+    console.error("Erro ao buscar produto por ID:", error);
+    res.status(500).json({ error: "Falha ao buscar produto." });
+  }
+});
+
+// ==========================================
+//        ROTAS DE PRODUTOS (POST e PUT)
+//        Adicionadas para resolver o problema de cadastro/edição
+// ==========================================
+
+// Rota para CADASTRAR NOVO PRODUTO
+app.post('/api/produtos', upload.single('imagem'), async (req, res) => {
+  try {
+    const { nome, descricao, preco, estoque, categoria, marca } = req.body;
+    let imagemUrl = null;
+
+    if (req.file) {
+      imagemUrl = await uploadToAzureBlob(req.file, 'produto');
+    }
+
+    const query = 'INSERT INTO produtos (nome, descricao, preco, estoque, imagem_url, categoria, marca) VALUES (?, ?, ?, ?, ?, ?, ?)';
+    const [rows] = await pool.execute(query, [nome || null, descricao || null, parseFloat(preco) || 0, parseInt(estoque) || 0, imagemUrl, categoria || 'Geral', marca || '']);
+
+    res.status(201).json({ id: rows.insertId, imagemUrl, status: "Produto adicionado!" });
+  } catch (error) {
+    console.error("Erro ao criar produto:", error);
+    res.status(500).json({ error: "Falha ao cadastrar produto.", details: error.message });
+  }
+});
+
+// Rota para ATUALIZAR PRODUTO EXISTENTE
+app.put('/api/produtos/:id', upload.single('imagem'), async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { nome, descricao, preco, estoque, categoria, marca, imagemUrl } = req.body; // imagemUrl é a URL existente se não houver novo arquivo
+    let finalImagemUrl = imagemUrl;
+
+    if (req.file) {
+      // Busca a URL da imagem atual no banco para deletar o blob antigo
+      const [currentProductRows] = await pool.execute('SELECT imagem_url FROM produtos WHERE id = ?', [id]);
+      const oldImageUrl = currentProductRows[0]?.imagem_url;
+      finalImagemUrl = await uploadToAzureBlob(req.file, 'produto', oldImageUrl);
+    }
+
+    const query = `
+      UPDATE produtos
+      SET nome=?, descricao=?, preco=?, estoque=?, imagem_url=?, categoria=?, marca=?
+      WHERE id=?
+    `;
+
+    await pool.execute(query, [nome || null, descricao || null, parseFloat(preco) || 0, parseInt(estoque) || 0, finalImagemUrl || null, categoria || 'Geral', marca || '', id]);
+    res.json({ message: "Produto atualizado!", imagemUrl: finalImagemUrl });
+  } catch (error) {
+    console.error("Erro ao atualizar produto:", error);
+    res.status(500).json({ error: "Falha ao atualizar produto.", details: error.message });
+  }
 });
 
 app.get('/api/clientes/:id', async (req, res) => {

@@ -55,7 +55,7 @@ const Carrinho = () => {
             {/* Informações do Produto */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
               <img 
-                src={item.imagem_url || 'https://via.placeholder.com/80'} 
+                src={item.imagem_url || 'https://placehold.co/80'} 
                 alt={item.nome} 
                 style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #333' }} 
               />

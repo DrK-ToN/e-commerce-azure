@@ -85,7 +85,7 @@ function Perfil() {
                     <div className="avatar-section" onClick={handleAvatarClick}>
                         <div className={`avatar-wrapper ${uploading ? 'scanning' : ''}`}>
                             <img 
-                                src={perfil.foto_url || 'https://via.placeholder.com/150'} 
+                                src={perfil.foto_url || 'https://placehold.co/150'} 
                                 alt="Avatar" 
                             />
                             <div className="avatar-overlay">ALTERAR</div>

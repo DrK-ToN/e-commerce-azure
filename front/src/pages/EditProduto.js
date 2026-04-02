@@ -8,6 +8,7 @@ const EditProduto = () => {
   const navigate = useNavigate();
 
   const [nome, setNome] = useState('');
+  const [marca, setMarca] = useState('');
   const [preco, setPreco] = useState('');
   const [descricao, setDescricao] = useState('');
   const [categoria, setCategoria] = useState('');
@@ -15,12 +16,20 @@ const EditProduto = () => {
   const [imagemUrlAtual, setImagemUrlAtual] = useState('');
   const [novaImagem, setNovaImagem] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [preview, setPreview] = useState(null);
 
   useEffect(() => {
+    // Se não houver ID na URL, é um cadastro novo. Não busca dados.
+    if (!id) {
+      setLoading(false);
+      return;
+    }
+
     api.get(`/produtos/${id}`)
       .then(res => {
         const p = res.data;
         setNome(p.nome || '');
+        setMarca(p.marca || '');
         setPreco(p.preco || '');
         setDescricao(p.descricao || '');
         setCategoria(p.categoria || '');
@@ -28,27 +37,42 @@ const EditProduto = () => {
         setImagemUrlAtual(p.imagem_url || '');
         setLoading(false);
       })
-      .catch(() => navigate('/admin'));
+      .catch(err => {
+        console.error("Erro ao buscar produto:", err);
+        alert("Erro ao carregar dados do implante ou ID inexistente.");
+        navigate('/admin/produtos');
+      });
   }, [id, navigate]);
 
   const handleUpdate = async (e) => {
     e.preventDefault();
     const formData = new FormData();
-    formData.append('nome', nome);
-    formData.append('preco', preco);
-    formData.append('descricao', descricao);
-    formData.append('categoria', categoria);
-    formData.append('estoque', estoque);
+    formData.append('nome', nome || '');
+    formData.append('marca', marca || ''); // <--- ESSENCIAL: Campo NOT NULL no seu SQL
+    formData.append('preco', preco || 0);
+    formData.append('descricao', descricao || '');
+    formData.append('categoria', categoria || 'Geral');
+    formData.append('estoque', estoque || 0);
     
-    if (novaImagem) formData.append('imagem', novaImagem);
-    else formData.append('imagemUrl', imagemUrlAtual);
+    if (novaImagem) {
+      formData.append('imagem', novaImagem);
+    } else {
+      formData.append('imagemUrl', imagemUrlAtual);
+    }
 
     try {
-      await api.put(`/produtos/${id}`, formData);
-      alert('Sistemas atualizados!');
-      navigate('/admin');
+      if (id) {
+        // Modo Edição
+        await api.put(`/produtos/${id}`, formData);
+      } else {
+        // Modo Criação
+        await api.post(`/produtos`, formData);
+      }
+      alert('Sistemas sincronizados com sucesso!');
+      navigate('/admin/produtos');
     } catch (err) {
-      alert('Erro na atualização.');
+      console.error("Erro ao salvar:", err);
+      alert('Falha crítica na comunicação com o banco.');
     }
   };
 
@@ -56,13 +80,18 @@ const EditProduto = () => {
 
   return (
     <div className="edit-container">
-      <h2 className="footer-title">CONFIGURAR IMPLANTE #{id}</h2>
+      <h2 className="footer-title">
+        {id ? `CONFIGURAR IMPLANTE #${id}` : 'CADASTRAR NOVO IMPLANTE'}
+      </h2>
       <form onSubmit={handleUpdate} className="section-highlight edit-form">
         <div className="input-group">
           <label>Designação do Item</label>
           <input type="text" value={nome} onChange={e => setNome(e.target.value)} required />
         </div>
-
+        <div className="input-group">
+            <label>Classe</label>
+            <input type="text" value={marca} onChange={e => setMarca(e.target.value)} />
+          </div>
         <div className="grid-3-col">
           <div className="input-group">
             <label>Preço (C$)</label>
@@ -84,16 +113,28 @@ const EditProduto = () => {
         </div>
 
         <div className="image-preview-container">
-          <img src={imagemUrlAtual} alt="Atual" className="preview-img" />
+          <img src={preview || imagemUrlAtual || 'https://placehold.co/150'} alt="Preview" className="preview-img" />
           <div className="input-group">
             <label>Substituir Visual?</label>
-            <input type="file" onChange={e => setNovaImagem(e.target.files[0])} />
+            <input 
+              type="file" 
+              accept="image/*"
+              onChange={e => {
+                const file = e.target.files[0];
+                if (file) {
+                  setNovaImagem(file);
+                  setPreview(URL.createObjectURL(file));
+                }
+              }} 
+            />
           </div>
         </div>
 
         <div className="form-actions">
-          <button type="submit" className="btn-save">GRAVAR ALTERAÇÕES</button>
-          <button type="button" className="btn-secondary btn-cancel" onClick={() => navigate('/admin')}>CANCELAR</button>
+          <button type="submit" className="btn-save">
+            {id ? 'GRAVAR ALTERAÇÕES' : 'CADASTRAR ITEM'}
+          </button>
+          <button type="button" className="btn-secondary btn-cancel" onClick={() => navigate('/admin/produtos')}>CANCELAR</button>
         </div>
       </form>
     </div>

@@ -49,10 +49,10 @@ const Produtos = () => {
               <div className="status-badge">{p.categoria || 'NÍVEL 1'}</div>
               <div className="product-thumb-container">
                 <img
-                  src={p.imagem_url || "https://via.placeholder.com/300x200?text=SEM+IMAGEM"}
+                  src={p.imagem_url || "https://placehold.co/300x200"}
                   alt={p.nome}
                   className="product-thumb"
-                  onError={(e) => { e.target.src = "https://via.placeholder.com/300x200?text=IMAGE+ERROR"; }}
+                  onError={(e) => { e.target.src = "https://placehold.co/300x200"; }}
                 />
               </div>
               <div className="product-body">
