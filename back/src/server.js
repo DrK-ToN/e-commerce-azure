@@ -9,7 +9,7 @@ require('dotenv').config();
 
 const app = express();
 
-// --- CORS UNIFICADO (Sem barras no final e sem duplicatas) ---
+// --- CORS ---
 const corsOptions = {
   origin: [
     'https://e-commerce-azure-git-main-everton-freitas-projects-2b6b7501.vercel.app',
@@ -24,7 +24,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.options('/{*splat}', cors(corsOptions)); // 👈 mesmas opções aqui
+app.options('/{*splat}', cors(corsOptions)); // preflight com as mesmas opções
 
 app.use(express.json());
 
@@ -51,7 +51,6 @@ const appRouter = t.router({
     }
   }),
   
-  // Rota de listagem de pedidos para o Admin (tRPC)
   'pedidos.list': t.procedure.query(async () => {
     const [rows] = await pool.query(`
       SELECT p.*, c.nome as cliente_nome 
@@ -63,16 +62,14 @@ const appRouter = t.router({
   }),
 });
 
-// --- ROTAS REST (Para Pedidos.js e Produtos.js) ---
-
-// Rota para o histórico de pedidos do CLIENTE
+// --- ROTAS REST ---
 app.get('/api/pedidos/cliente/:id', async (req, res) => {
   try {
     const [rows] = await pool.execute(
       'SELECT * FROM pedidos WHERE cliente_id = ? ORDER BY data_pedido DESC',
       [req.params.id]
     );
-    res.json(rows || []); // Garante que retorne um Array e não quebre o .map()
+    res.json(rows || []);
   } catch (error) {
     console.error("Erro Pedidos:", error.message);
     res.status(500).json([]); 
@@ -97,7 +94,6 @@ app.use(
   })
 );
 
-/// O Railway SEMPRE vai preencher o process.env.PORT
 const PORT = process.env.PORT || 3001; 
 
 app.listen(PORT, '0.0.0.0', () => {
