@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
-import { useCart } from "../hooks/useCart"; // Certifique-se que o useCart aponta para o Contexto
+import { useCart } from "../hooks/useCart";
 import { FaCheckCircle } from 'react-icons/fa'; 
 import '../styles/Produtos.css';
 
 const Produtos = () => {
-  const [produtos, setProdutos] = useState([]);
+  const [produtos, setProdutos] = useState([]); // Inicia como array vazio
   const [loading, setLoading] = useState(true);
   const [feedback, setFeedback] = useState(null); 
   const { addToCart } = useCart();
@@ -15,18 +15,20 @@ const Produtos = () => {
   useEffect(() => {
     api.get("/produtos")
       .then((res) => {
-        setProdutos(res.data);
+        // Verifica se res.data é um array antes de setar
+        setProdutos(Array.isArray(res.data) ? res.data : []);
         setLoading(false);
       })
       .catch((err) => {
-        console.error("Erro ao carregar catálogo:", err);
+        console.error("Erro na API:", err);
+        setProdutos([]); // Mantém array vazio se der erro
         setLoading(false);
       });
   }, []);
 
-  const handleAddToCart = (produto) => {
-    addToCart(produto);
-    setFeedback(produto.id); 
+  const handleAddToCart = (p) => {
+    addToCart(p);
+    setFeedback(p.id); 
     setTimeout(() => setFeedback(null), 2000); 
   };
 
@@ -40,53 +42,37 @@ const Produtos = () => {
       </header>
 
       <div className="produtos-grid">
-        {produtos.map((p) => (
-          <article key={p.id} className="cyber-product-card">
-            {/* TAG DE NÍVEL/CATEGORIA */}
-            <div className="status-badge">{p.categoria || 'NÍVEL 1'}</div>
-
-            {/* CONTAINER DA IMAGEM (Restaurado) */}
-            <div className="product-thumb-container">
-              <img
-                src={p.imagem_url || "https://via.placeholder.com/300x200?text=NO+DATA"}
-                alt={p.nome}
-                className="product-thumb"
-              />
-            </div>
-
-            {/* CORPO DO CARD (Restaurado) */}
-            <div className="product-body">
-              <h3>{p.nome}</h3>
-              <p className="product-description">{p.descricao}</p>
-
-              <div className="product-price-tag">
-                C$ {parseFloat(p.preco).toFixed(2)}
+        {/* Renderiza apenas se produtos for um array populado */}
+        {Array.isArray(produtos) && produtos.length > 0 ? (
+          produtos.map((p) => (
+            <article key={p.id} className="cyber-product-card">
+              <div className="status-badge">{p.categoria || 'NÍVEL 1'}</div>
+              <div className="product-thumb-container">
+                <img
+                  src={p.imagem_url || "https://via.placeholder.com/300x200?text=SEM+IMAGEM"}
+                  alt={p.nome}
+                  className="product-thumb"
+                  onError={(e) => { e.target.src = "https://via.placeholder.com/300x200?text=IMAGE+ERROR"; }}
+                />
               </div>
-
-              <div className="product-actions">
-  <button 
-    onClick={() => { addToCart(p); navigate('/checkout'); }} 
-    className="btn-buy" // Classe específica
-  >
-    COMPRAR AGORA
-  </button>
-
-  <button 
-    onClick={() => handleAddToCart(p)} 
-    className="btn-add" // Classe específica
-  >
-    {feedback === p.id ? (
-      <span className="feedback-content" style={{ color: '#00ff00', display: 'flex', alignItems: 'center', gap: '5px' }}>
-        <FaCheckCircle /> ADD!
-      </span>
-    ) : (
-      "+ CARRINHO"
-    )}
-  </button>
-</div>
-            </div>
-          </article>
-        ))}
+              <div className="product-body">
+                <h3>{p.nome}</h3>
+                <p className="product-description">{p.descricao}</p>
+                <div className="product-price-tag">C$ {parseFloat(p.preco || 0).toFixed(2)}</div>
+                <div className="product-actions">
+                  <button onClick={() => { addToCart(p); navigate('/checkout'); }} className="btn-buy">COMPRAR AGORA</button>
+                  <button onClick={() => handleAddToCart(p)} className="btn-add">
+                    {feedback === p.id ? <span><FaCheckCircle /> ADD!</span> : "+ CARRINHO"}
+                  </button>
+                </div>
+              </div>
+            </article>
+          ))
+        ) : (
+          <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '3rem' }}>
+            <p>[ ERRO DE SINCRONIZAÇÃO: NENHUM HARDWARE DETECTADO ]</p>
+          </div>
+        )}
       </div>
     </div>
   );
