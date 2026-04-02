@@ -26,6 +26,10 @@ app.use((req, res, next) => {
 
 app.use(express.json());
 
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok' });
+});
+
 // --- INICIALIZAÇÃO tRPC ---
 const t = initTRPC.create({
   transformer: superjson,
