@@ -22,7 +22,7 @@ app.use(cors({
 }));
 
 // Responde o preflight para todas as rotas
-app.options('*', cors());  // 👈 adicione essa linha logo abaixo
+app.options('/{*splat}', cors());
 
 app.use(express.json());
 
