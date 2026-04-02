@@ -10,21 +10,19 @@ require('dotenv').config();
 const app = express();
 
 // --- CORS ---
-const corsOptions = {
-  origin: [
-    'https://e-commerce-azure-git-main-everton-freitas-projects-2b6b7501.vercel.app',
-    'https://e-commerce-azure-cfrqci3zi-everton-freitas-projects-2b6b7501.vercel.app',
-    'https://e-commerce-azure-jet-rho.vercel.app',
-    'http://localhost:3001',
-    'http://localhost:3000',
-  ],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
-};
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(204);
+  }
+  next();
+});
 
-app.use(cors(corsOptions));
-app.options('/{*splat}', cors(corsOptions)); // preflight com as mesmas opções
+// app.use(cors(corsOptions));
+// app.options('/{*splat}', cors(corsOptions)); // preflight com as mesmas opções
 
 app.use(express.json());
 
